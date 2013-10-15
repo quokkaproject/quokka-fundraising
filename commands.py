@@ -1,13 +1,13 @@
 # coding: utf-8
 
 from flask.ext.script import Command, Option
-from .models import Fundraising
+from .models import Campaign
 
 
-class ListFundraising(Command):
-    "prints a list of fundraisings"
+class ListCampaign(Command):
+    "prints a list of campaigns"
 
-    command_name = 'list_fundraisings'
+    command_name = 'list_campaigns'
 
     option_list = (
         Option('--title', '-t', dest='title'),
@@ -15,9 +15,9 @@ class ListFundraising(Command):
 
     def run(self, title=None):
 
-        fundraisings = Fundraising.objects
+        campaigns = Campaign.objects
         if title:
-            fundraisings = fundraisings(title=title)
+            campaigns = campaigns(title=title)
 
-        for fundraising in fundraisings:
-            print(fundraising)
+        for campaign in campaigns:
+            print(campaign)

@@ -1,13 +1,12 @@
 # coding : utf -8
-from flask.ext.htmlbuilder import html
-from flask.ext.admin.babel import lazy_gettext
+
 from quokka import admin
 from quokka.core.admin.models import ModelAdmin
 
-from .models import Fundraising
+from .models import Campaign
 
 
-class FundraisingAdmin(ModelAdmin):
+class CampaignAdmin(ModelAdmin):
     """
     All attributes added here for example
     more info in admin source
@@ -46,7 +45,8 @@ class FundraisingAdmin(ModelAdmin):
     # column_filters = ['published', 'title']
     # column_searchable_list = ('title', 'body', 'summary')
 
-    # form_columns = ['title', 'slug', 'channel', 'related_channels', 'summary',
+    # form_columns = ['title', 'slug', 'channel', 'related_channels',
+    #                 'summary',
     #                'body', 'main_image', 'main_image_caption', 'published',
     #                'show_on_channel', 'available_at', 'tags', 'comments',
     #                'values']
@@ -84,4 +84,4 @@ class FundraisingAdmin(ModelAdmin):
     #}
 
 
-admin.register(Fundraising, FundraisingAdmin, category="Fundraising")
+admin.register(Campaign, CampaignAdmin, category="Fundraising")
