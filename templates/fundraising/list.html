@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="large-8 columns">
-    {% for content in fundraisings %}
+    {% for content in campaigns %}
       <h2><a href="{{ content.get_absolute_url() }}">{{ content.title }}</a></h2>
         {% if content.summary %}
            <p>{{ content.summary|truncate(255)|safe() }}</p>
