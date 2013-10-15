@@ -1,7 +1,7 @@
 quokka-fundraising
 ==================
 
-#  | Version 0.1.0
+# Quokka fundraising app | Version 0.1.0
 
 Quokka Fundraising Module  
 
