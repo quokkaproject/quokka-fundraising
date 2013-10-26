@@ -1,9 +1,10 @@
 # coding : utf -8
 
 from quokka import admin
+from quokka.core.admin import _, _l
 from quokka.core.admin.models import ModelAdmin
 
-from .models import Campaign
+from .models import Campaign, Donation
 
 
 class CampaignAdmin(ModelAdmin):
@@ -84,4 +85,11 @@ class CampaignAdmin(ModelAdmin):
     #}
 
 
-admin.register(Campaign, CampaignAdmin, category="Fundraising")
+class DonationAdmin(ModelAdmin):
+    roles_accepted = ('admin', 'editor')
+
+
+admin.register(Campaign, CampaignAdmin,
+               category=_("Fundraising"), name=_l("Campaign"))
+admin.register(Donation, DonationAdmin,
+               category=_("Fundraising"), name=_l("Donation"))

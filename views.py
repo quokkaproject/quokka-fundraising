@@ -15,7 +15,7 @@ class ListView(MethodView):
     def get(self):
         logger.info('getting list of campaign')
         campaigns = Campaign.objects.all()
-        return render_template('fundraising/list.html', campaigns=campaigns)
+        return render_template(['fundraising/list.html'], campaigns=campaigns)
 
 
 class DetailView(MethodView):
