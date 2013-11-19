@@ -1,27 +1,24 @@
 # coding: utf-8
 
 from quokka.core.db import db
-from quokka.core.models import Publishable, Content
-#from quokka.modules.accounts.models import User
+from quokka.core.models import Publishable
+from quokka.modules.cart.models import BaseProduct
 
 
-class Campaign(Content):
+class Campaign(BaseProduct):
     body = db.StringField(required=True)
+    start_date = db.DateTimeField()
+    end_date = db.DateTimeField()
+    min_value = db.FloatField()
+    max_value = db.FloatField()
+    goal = db.FloatField()
+    balance = db.FloatField()
+    open_for_donations = db.BooleanField(default=True)
 
 
 class Values(db.EmbeddedDocument):
     campaign = db.ReferenceField(Campaign)
-    campaign_name = db.StringField()
     value = db.FloatField()
-
-
-class Payment(db.EmbeddedDocument):
-    uid = db.StringField()
-    method = db.StringField()
-    value = db.FloatField()
-    date = db.DateTimeField()
-    confirmed_at = db.DateTimeField()
-    status = db.StringField()
 
 
 class Donation(Publishable, db.DynamicDocument):
@@ -29,7 +26,6 @@ class Donation(Publishable, db.DynamicDocument):
     values = db.ListField(db.EmbeddedDocumentField(Values))
     total = db.FloatField()
     tax = db.FloatField()
-    payment = db.EmbeddedDocumentField(Payment)
 
     @property
     def donor(self):
