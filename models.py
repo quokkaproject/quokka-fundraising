@@ -13,6 +13,7 @@ class Donations(db.EmbeddedDocument):
     value = db.FloatField(default=0)
     donor = db.StringField(max_length=255)
     show_donor = db.BooleanField(default=True)
+    display_name = db.StringField(max_length=255)
 
 
 class Campaign(BaseProduct):
@@ -36,13 +37,15 @@ class Campaign(BaseProduct):
             don.value = value
             don.donor = donation.donor.name if donation.donor else None
             don.show_donor = donation.published
+            don.display_name = donation.display_name
         else:
             don = Donations(
                 donation=donation,
                 status=donation.status,
                 value=value,
                 donor=donation.donor.name if donation.donor else None,
-                show_donor=donation.published
+                show_donor=donation.published,
+                display_name=donation.display_name
             )
             self.donations.append(don)
         self.save()
@@ -75,7 +78,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     total = db.FloatField(default=0)
     tax = db.FloatField(default=0)
     donor = db.ReferenceField('User', default=get_current_user, required=False)
-
+    display_name = db.StringField(max_length=255)
     cart = db.ReferenceField(Cart, reverse_delete_rule=db.NULLIFY)
     confirmed_date = db.DateTimeField()
 
@@ -88,6 +91,21 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
             now = datetime.datetime.now()
             self.confirmed_date = kwargs.get('date', now)
         self.save()
+
+    def remove_item(self, **kwargs):
+        uid = kwargs.get('uid')
+        if uid:
+            try:
+                campaign = Campaign.objects.get(id=uid)
+            except campaign.DoesNotExist:
+                campaign = None
+
+            if campaign:
+                self.values.delete(campaign=campaign)
+                # Commented out to avoid race conditions
+                # implement a celery task to clean that donations
+                # campaign.donations.delete(donation=self)
+                self.save()
 
     def clean(self):
         unique_values = {

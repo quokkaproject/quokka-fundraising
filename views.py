@@ -46,6 +46,8 @@ class DonationView(MethodView):
         )
         donation.save()
 
+        self.cart.reference = donation
+
         cart_items = []
         for item in donation.values:
             cart_items.append(
