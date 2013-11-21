@@ -1,33 +1,88 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
+# coding: utf-8
+from flask import request, redirect, url_for, current_app
 from flask.views import MethodView
+from quokka.utils import get_current_user
+from quokka.modules.cart.models import Cart, Item
 from quokka.core.templates import render_template
 
-from .models import Campaign
-
-import logging
-logger = logging.getLogger()
+from .models import Donation, Campaign, Values
 
 
-class ListView(MethodView):
+class DonationView(MethodView):
+    def post(self):
+        campaign_id = request.form.get('campaign_id')
+        value = request.form.get('value')
+        if not value:
+            return redirect(url_for('list'))
+        self.current_user = get_current_user()
+        self.cart = Cart.get_cart()
 
-    def get(self):
-        logger.info('getting list of campaign')
-        campaigns = Campaign.objects.all()
-        return render_template(['fundraising/list.html'], campaigns=campaigns)
+        try:
+            campaign = Campaign.objects.get(id=campaign_id)
+        except Campaign.DoesNotExist:
+            self.cart.addlog("Error getting campaign %s" % campaign_id)
+            return render_template('fundraising/donation_error.html')
 
+        donation = None
+        if hasattr(self.cart, 'fundraising_donation_id'):
+            try:
+                donation = Donation.objects.get(
+                    id=self.cart.fundraising_donation_id
+                )
+            except Donation.DoesNotExist:
+                donation = None
 
-class DetailView(MethodView):
+        if not donation:
+            donation = Donation(
+                donor=self.current_user,
+                cart=self.cart
+            )
+            donation.save()
+            self.cart.fundraising_donation_id = donation.id
+            self.cart.addlog("Created a new Donation", save=True)
 
-    def get_context(self, slug):
-        campaign = Campaign.objects.get_or_404(slug=slug)
+        donation.values.append(
+            Values(campaign=campaign, value=float(value))
+        )
+        donation.save()
 
-        context = {
-            "campaign": campaign
-        }
-        return context
+        cart_items = []
+        for item in donation.values:
+            cart_items.append(
+                Item(
+                    uid=item.campaign.get_uid(),
+                    product=item.campaign,
+                    reference=donation,
+                    title=item.campaign.get_title(),
+                    description=item.campaign.get_description(),
+                    unity_value=item.value
+                )
+            )
+            self.cart.addlog(
+                "Item added/updated %s" % item.campaign.get_title(),
+                save=False
+            )
 
-    def get(self, slug):
-        context = self.get_context(slug)
-        return render_template('fundraising/detail.html', **context)
+        self.cart.items = cart_items
+
+        self.cart.requires_login = current_app.config.get(
+            "FUNDRAISING_CART_REQUIRES_LOGIN",
+            self.cart.requires_login
+        )
+        self.cart.continue_shopping_url = current_app.config.get(
+            "FUNDRAISING_CART_CONTINUE_SHOPPING_URL",
+            self.cart.continue_shopping_url
+        )
+        self.cart.pipeline = current_app.config.get(
+            "FUNDRAISING_CART_PIPELINE",
+            self.cart.pipeline
+        )
+        self.cart.config = current_app.config.get(
+            "FUNDRAISING_CART_CONFIG",
+            self.cart.config
+        )
+
+        self.cart.fundraising_donation_id = donation.id
+        self.cart.addlog(u"%s items added" % len(cart_items), save=True)
+
+        return redirect(url_for('cart.cart'))

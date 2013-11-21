@@ -34,14 +34,14 @@ class Campaign(BaseProduct):
         if don:
             don.status = donation.status
             don.value = value
-            don.donor = donation.donor.name
+            don.donor = donation.donor.name if donation.donor else None
             don.show_donor = donation.published
         else:
             don = Donations(
                 donation=donation,
                 status=donation.status,
                 value=value,
-                donor=donation.donor.name,
+                donor=donation.donor.name if donation.donor else None,
                 show_donor=donation.published
             )
             self.donations.append(don)
@@ -55,7 +55,9 @@ class Campaign(BaseProduct):
         ]
 
     def save(self, *args, **kwargs):
-        self.balance = sum([item.value for item in self.donations])
+        self.balance = sum(
+            [item.value for item in self.donations.filter(status="confirmed")]
+        )
         super(Campaign, self).save(*args, **kwargs)
 
 
@@ -72,7 +74,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     values = db.ListField(db.EmbeddedDocumentField(Values))
     total = db.FloatField(default=0)
     tax = db.FloatField(default=0)
-    donor = db.ReferenceField('User', default=get_current_user, required=True)
+    donor = db.ReferenceField('User', default=get_current_user, required=False)
 
     cart = db.ReferenceField(Cart, reverse_delete_rule=db.NULLIFY)
     confirmed_date = db.DateTimeField()
