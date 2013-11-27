@@ -62,7 +62,8 @@ class Campaign(BaseProduct):
     def save(self, *args, **kwargs):
         if self.donations:
             self.balance = sum(
-                [item.value for item in self.donations.filter(status="confirmed")]
+                [item.value
+                 for item in self.donations.filter(status="confirmed")]
             )
         super(Campaign, self).save(*args, **kwargs)
 

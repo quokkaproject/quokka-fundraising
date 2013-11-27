@@ -53,5 +53,3 @@ class CompleteInformation(CartPipeline):
 
         self.cart.addlog("CompleteInformation Pipeline")
         return self.go()
-
-
