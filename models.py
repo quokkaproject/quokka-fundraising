@@ -1,10 +1,12 @@
 # coding: utf-8
 
 import datetime
+from flask import current_app
 from quokka.core.db import db
 from quokka.utils import get_current_user
-from quokka.core.models import Publishable
+from quokka.core.models import Publishable, Channel
 from quokka.modules.cart.models import BaseProduct, BaseProductReference, Cart
+from quokka.modules.cart.models import Item
 
 
 class Donations(db.EmbeddedDocument):
@@ -58,9 +60,10 @@ class Campaign(BaseProduct):
         ]
 
     def save(self, *args, **kwargs):
-        self.balance = sum(
-            [item.value for item in self.donations.filter(status="confirmed")]
-        )
+        if self.donations:
+            self.balance = sum(
+                [item.value for item in self.donations.filter(status="confirmed")]
+            )
         super(Campaign, self).save(*args, **kwargs)
 
 
@@ -84,6 +87,42 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
 
     def __unicode__(self):
         return u"{s.donor} - {s.total}".format(s=self)
+
+    def set_project_campaign(self, donation_to_project):
+        default_campaign = current_app.config.get(
+            'FUNDRAISING_PROJECT_CAMPAIGN',
+            {'slug': 'project-campaign',
+             'title': 'Donation to project',
+             'description': 'Donation to project',
+             'published': True,
+             'channel': Channel.get_homepage()}
+        )
+
+        try:
+            campaign = Campaign.objects.get(slug=default_campaign.get('slug'))
+        except Campaign.DoesNotExist:
+            campaign = Campaign(**default_campaign)
+            campaign.save()
+
+        self.values.append(
+            Values(campaign=campaign, value=float(donation_to_project))
+        )
+
+        self.cart.items.append(
+            Item(
+                uid=campaign.get_uid(),
+                product=campaign,
+                reference=self,
+                title=campaign.get_title(),
+                description=campaign.get_description(),
+                unity_value=float(donation_to_project)
+            )
+        )
+        self.cart.addlog(
+            "Item added %s" % campaign.get_title(),
+            save=True
+        )
+        self.save()
 
     def set_status(self, status, *args, **kwargs):
         self.status = status

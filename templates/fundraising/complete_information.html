@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+<h2> Confirme seus dados </h2>
+
+<form class="form-horizontal" role="form" action="{{url_for('cart.checkout')}}" method="POST">
+
+<input type="hidden" name="fundraising_complete_information_confirm" value="true">
+
+<div class="form-group">
+<label for="donation_to_project">Donation to project:</label>
+<select id="donation_to_project" name="donation_to_project">
+    <option value="">-- Select a value --</option>
+    {% for val in (5, 10, 15, 20, 25, 30, 25, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 125, 150, 175, 200, 250, 300, 400, 500) %}
+    <option value="{{val}}">R$ {{("%.2f" % val)|string|replace(".", ",") }}</option>
+    {% endfor %}
+</select>
+</div>
+
+<div class="form-group">
+<label for="published">Show your name?</label>
+<input type="checkbox" name="published" checked>
+</div>
+
+<div class="form-group">
+<label for="name">Display name</label>
+<input type="text" name="name" value="{{current_user.name}}" required>
+</div>
+
+<br />
+<input type="submit" class="btn btn-primary" value="Confirmar">
+
+</form>
+
+<a class="btn" href="{{url_for_security('logout', next=url_for('cart.cart'))}}">Sair e fazer login com outro usuário</a>
+</div>
+
+{% endblock %}
