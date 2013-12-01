@@ -3,6 +3,7 @@
 from quokka import admin
 from quokka.core.admin import _, _l
 from quokka.core.admin.models import ModelAdmin, BaseContentAdmin
+from quokka.core.admin.fields import ThumbField
 from quokka.core.widgets import TextEditor, PrepopulatedText
 
 from .models import Campaign, Donation
@@ -23,7 +24,7 @@ class CampaignAdmin(BaseContentAdmin):
                     'min_value', 'max_value',
                     'goal', 'balance',
                     'open_for_donations',
-                    'contents',
+                    'add_image', 'contents',
                     'show_on_channel', 'available_at', 'available_until',
                     'tags', 'values', 'template_type', 'donations']
 
@@ -31,11 +32,15 @@ class CampaignAdmin(BaseContentAdmin):
         'contents': {
             'form_subdocuments': {
                 None: {
-                    'form_columns': ('content', 'caption', 'purpose', 'order'),
+                    'form_columns': ('content', 'caption', 'purpose',
+                                     'order', 'thumb'),
                     'form_ajax_refs': {
                         'content': {
                             'fields': ['title', 'long_slug', 'summary']
                         }
+                    },
+                    'form_extra_fields': {
+                        'thumb': ThumbField('thumb', endpoint="media")
                     }
                 }
             }
