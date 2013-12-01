@@ -31,7 +31,7 @@ class TransactionListView(MethodView):
                     "_id": "$payment_method",
                     "total": {"$sum": "$total"},
                     "taxes": {"$sum": "$tax"},
-                    "count":{"$sum": 1}
+                    "count": {"$sum": 1}
                 }
             }
         ])
@@ -41,12 +41,12 @@ class TransactionListView(MethodView):
 
         campaign_collection = Campaign._get_collection()
         aggregate_by_channel = campaign_collection.aggregate([
-            {"$match":{"mpath":{"$regex": "^,animais"}}},
+            {"$match": {"mpath": {"$regex": "^,animais"}}},
             {
-                "$group":{
+                "$group": {
                     "_id": "$channel",
                     "total": {"$sum": "$balance"},
-                    "count":{"$sum": 1}
+                    "count": {"$sum": 1}
                 }
             }
         ])
