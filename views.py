@@ -4,8 +4,57 @@ from flask.views import MethodView
 from quokka.utils import get_current_user
 from quokka.modules.cart.models import Cart, Item
 from quokka.core.templates import render_template
+from quokka.core.models import Channel
 
 from .models import Donation, Campaign, Values
+
+
+class TransactionListView(MethodView):
+    def get(self):
+        context = {}
+
+        donations = Donation.objects(
+            status='confirmed'
+        ).order_by('confirmed_date')
+        context['donations'] = donations
+
+        context['total'] = donations.sum('total')
+        context['taxes'] = donations.sum('tax')
+        context['balance'] = context['total'] - context['taxes']
+
+        collection = Donation._get_collection()
+
+        aggregated = collection.aggregate([
+            {"$match": {"status": 'confirmed'}},
+            {
+                "$group": {
+                    "_id": "$payment_method",
+                    "total": {"$sum": "$total"},
+                    "taxes": {"$sum": "$tax"},
+                    "count":{"$sum": 1}
+                }
+            }
+        ])
+
+        context['aggregated'] = aggregated.get('result')
+        context['campaigns'] = Campaign.objects().order_by('title')
+
+        campaign_collection = Campaign._get_collection()
+        aggregate_by_channel = campaign_collection.aggregate([
+            {"$match":{"mpath":{"$regex": "^,animais"}}},
+            {
+                "$group":{
+                    "_id": "$channel",
+                    "total": {"$sum": "$balance"},
+                    "count":{"$sum": 1}
+                }
+            }
+        ])
+        context['aggregate_by_channel'] = aggregate_by_channel.get('result')
+        for item in context['aggregate_by_channel']:
+            item['channel'] = Channel.objects.get(id=item['_id'])
+
+        return render_template('fundraising/transaction_list.html', **context)
 
 
 class DonationView(MethodView):

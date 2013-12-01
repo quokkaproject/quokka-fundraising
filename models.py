@@ -77,7 +77,8 @@ class Values(db.EmbeddedDocument):
 
 
 class Donation(BaseProductReference, Publishable, db.DynamicDocument):
-    status = db.StringField(default="pending", max_length=255)
+    status = db.StringField(default="pending", max_length=255,
+                            choices=Cart.STATUS)
     values = db.ListField(db.EmbeddedDocumentField(Values))
     total = db.FloatField(default=0)
     tax = db.FloatField(default=0)
@@ -85,6 +86,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     display_name = db.StringField(max_length=255)
     cart = db.ReferenceField(Cart, reverse_delete_rule=db.NULLIFY)
     confirmed_date = db.DateTimeField()
+    payment_method = db.StringField(max_length=255)
 
     def __unicode__(self):
         return u"{s.donor} - {s.total}".format(s=self)
@@ -164,6 +166,10 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
             self.total = sum([item.value for item in self.values])
 
     def save(self, *args, **kwargs):
+
+        if self.cart and self.cart.processor:
+            self.payment_method = self.cart.processor.identifier
+
         super(Donation, self).save(*args, **kwargs)
 
         for item in self.values:

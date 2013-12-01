@@ -51,9 +51,9 @@ class CampaignAdmin(BaseContentAdmin):
 class DonationAdmin(ModelAdmin):
     roles_accepted = ('admin', 'editor')
     column_list = ['donor', 'created_at', 'values', 'total', 'tax',
-                   'status', 'published']
+                   'payment_method', 'status', 'published']
     form_columns = ['donor', 'created_at', 'values', 'total', 'tax',
-                    'status', 'published',
+                    'payment_method', 'status', 'published',
                     'confirmed_date']
 
 

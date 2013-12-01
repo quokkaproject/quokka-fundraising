@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul>
+{% for donation in donations %}
+<li>
+  {{donation}}
+</li>
+{% endfor %}
+</ul>
+{% endblock %}
