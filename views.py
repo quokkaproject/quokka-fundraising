@@ -16,6 +16,10 @@ class TransactionListView(MethodView):
         donations = Donation.objects(
             status='confirmed'
         ).order_by('confirmed_date')
+
+        if not donations:
+            return render_template('fundraising/transaction_empty.html')
+
         context['donations'] = donations
 
         context['total'] = donations.sum('total')
