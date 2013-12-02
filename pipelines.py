@@ -9,11 +9,13 @@ from .models import Donation
 class SetDonor(CartPipeline):
     def process(self):
 
+        user = get_current_user()
+
         donations = Donation.objects.filter(
             cart=self.cart
         )
 
-        user = get_current_user()
+
         for donation in donations:
             donation.donor = user
             donation.save()
@@ -22,6 +24,8 @@ class SetDonor(CartPipeline):
             "name": user.name,
             "email": user.email,
         }
+
+        self.cart.belongs_to = user
 
         self.cart.addlog("SetDonor Pipeline: defined sender data")
 
@@ -35,7 +39,7 @@ class CompleteInformation(CartPipeline):
         if not confirm:
             return self.render('fundraising/complete_information.html')
 
-        display_name = request.form.get('display_name', user.name)
+        display_name = request.form.get('display_name') or user.name
         published = request.form.get('published', True)
         donation_to_project = request.form.get('donation_to_project')
 
