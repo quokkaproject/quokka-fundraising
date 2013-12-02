@@ -39,9 +39,12 @@ class TransactionListView(MethodView):
         context['aggregated'] = aggregated.get('result')
         context['campaigns'] = Campaign.objects().order_by('title')
 
+        base_channel = current_app.config.get(
+            'FUNDRAISING_BASE_CHANNEL', 'home'
+        )
         campaign_collection = Campaign._get_collection()
         aggregate_by_channel = campaign_collection.aggregate([
-            {"$match": {"mpath": {"$regex": "^,animais"}}},
+            {"$match": {"mpath": {"$regex": "^,{0}".format(base_channel)}}},
             {
                 "$group": {
                     "_id": "$channel",
