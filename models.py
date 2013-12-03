@@ -82,7 +82,9 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     values = db.ListField(db.EmbeddedDocumentField(Values))
     total = db.FloatField(default=0)
     tax = db.FloatField(default=0)
-    donor = db.ReferenceField('User', default=get_current_user, required=False)
+    donor = db.ReferenceField('User',
+                              #default=get_current_user,
+                              required=False)
     display_name = db.StringField(max_length=255)
     cart = db.ReferenceField(Cart, reverse_delete_rule=db.NULLIFY)
     confirmed_date = db.DateTimeField()
