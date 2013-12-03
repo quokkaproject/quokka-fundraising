@@ -19,10 +19,11 @@ class SetDonor(CartPipeline):
             donation.donor = user
             donation.save()
 
-        self.cart.sender_data = {
-            "name": user.name,
-            "email": user.email,
-        }
+        if user.name and len(user.name.split()) > 1:
+            self.cart.sender_data = {
+                "name": user.name,
+                "email": user.email,
+            }
 
         self.cart.belongs_to = user
 
