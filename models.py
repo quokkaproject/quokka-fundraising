@@ -3,7 +3,7 @@
 import datetime
 from flask import current_app
 from quokka.core.db import db
-from quokka.utils import get_current_user
+# from quokka.utils import get_current_user
 from quokka.core.models import Publishable, Channel
 from quokka.modules.cart.models import BaseProduct, BaseProductReference, Cart
 from quokka.modules.cart.models import Item
