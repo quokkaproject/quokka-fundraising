@@ -15,7 +15,6 @@ class SetDonor(CartPipeline):
             cart=self.cart
         )
 
-
         for donation in donations:
             donation.donor = user
             donation.save()

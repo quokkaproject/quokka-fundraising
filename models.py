@@ -134,6 +134,13 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
             self.confirmed_date = kwargs.get('date', now)
         self.save()
 
+    def set_tax(self, tax):
+        self.tax = tax
+        self.save()
+
+    def get_response(self, response, identifier):
+        pass
+
     def remove_item(self, **kwargs):
         uid = kwargs.get('uid')
         if uid:
