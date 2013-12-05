@@ -93,7 +93,8 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     def __unicode__(self):
         return u"{s.donor} - {s.total}".format(s=self)
 
-    def set_project_campaign(self, donation_to_project):
+    def set_project_campaign(self, donation_to_project, cart=None):
+        cart = cart or self.cart
         default_campaign = current_app.config.get(
             'FUNDRAISING_PROJECT_CAMPAIGN',
             {'slug': 'project-campaign',
@@ -113,7 +114,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
             Values(campaign=campaign, value=float(donation_to_project))
         )
 
-        self.cart.items.append(
+        cart.items.append(
             Item(
                 uid=campaign.get_uid(),
                 product=campaign,
@@ -123,9 +124,9 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
                 unity_value=float(donation_to_project)
             )
         )
-        self.cart.addlog(
+        cart.addlog(
             "Item added %s" % campaign.get_title(),
-            save=True
+            save=False
         )
         self.save()
 

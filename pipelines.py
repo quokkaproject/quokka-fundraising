@@ -53,7 +53,7 @@ class CompleteInformation(CartPipeline):
             donation.save()
 
         if donation_to_project:
-            donation.set_project_campaign(donation_to_project)
+            donation.set_project_campaign(donation_to_project, cart=self.cart)
 
         self.cart.addlog("CompleteInformation Pipeline")
         return self.go()
