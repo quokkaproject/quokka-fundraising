@@ -134,7 +134,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
 
     def set_status(self, status, *args, **kwargs):
         self.status = status
-        if status == "confirmed":
+        if status == "confirmed" and not self.confirmed_date:
             now = datetime.datetime.now()
             self.confirmed_date = kwargs.get('date', now)
         self.save()
