@@ -186,7 +186,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
         return " ".join([
             user.name,
             user.email,
-            self.display_name
+            self.display_name or ""
         ])
 
     def save(self, *args, **kwargs):
