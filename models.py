@@ -90,6 +90,8 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     confirmed_date = db.DateTimeField()
     payment_method = db.StringField(max_length=255)
 
+    search_helper = db.StringField()
+
     def __unicode__(self):
         return u"{s.donor} - {s.total}".format(s=self)
 
@@ -174,12 +176,30 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
 
         if self.values:
             self.total = sum([item.value for item in self.values])
+        else:
+            self.total = 0
+
+    def get_search_helper(self):
+        if not self.donor:
+            return ""
+        user = self.donor
+        return " ".join([
+            user.name,
+            user.email,
+            self.display_name
+        ])
 
     def save(self, *args, **kwargs):
 
         if self.cart and self.cart.processor:
             self.payment_method = self.cart.processor.identifier
 
+        if self.cart:
+            self.published = self.cart.published
+            self.total = self.cart.total
+            self.tax = self.cart.tax
+
+        self.search_helper = self.get_search_helper()
         super(Donation, self).save(*args, **kwargs)
 
         for item in self.values:
