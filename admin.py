@@ -55,7 +55,7 @@ class DonationAdmin(ModelAdmin):
     column_searchable_list = ['search_helper', 'payment_method']
     form_columns = ['donor', 'created_at', 'values', 'total', 'tax',
                     'payment_method', 'status', 'published',
-                    'confirmed_date']
+                    'confirmed_date', 'display_name']
 
     column_formatters = {
         'created_at': ModelAdmin.formatters.get('datetime'),
