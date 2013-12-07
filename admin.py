@@ -52,9 +52,37 @@ class DonationAdmin(ModelAdmin):
     roles_accepted = ('admin', 'editor')
     column_list = ['donor', 'created_at', 'values', 'total', 'tax',
                    'payment_method', 'status', 'published']
+    column_searchable_list = ['search_helper', 'payment_method']
     form_columns = ['donor', 'created_at', 'values', 'total', 'tax',
                     'payment_method', 'status', 'published',
                     'confirmed_date']
+
+    column_formatters = {
+        'created_at': ModelAdmin.formatters.get('datetime'),
+        'available_at': ModelAdmin.formatters.get('datetime'),
+        'values': ModelAdmin.formatters.get('ul'),
+        'status': ModelAdmin.formatters.get('status'),
+    }
+
+    column_formatters_args = {
+        'ul': {
+            'values': {
+                'placeholder': "{item.campaign.title} - {item.value}",
+                'style': "min-width:200px;max-width:300px;"
+            }
+        },
+        'status': {
+            'status': {
+                'labels': {
+                    'confirmed': 'success',
+                    'checked_out': 'warning',
+                    'cancelled': 'danger',
+                    'completed': 'success'
+                },
+                'style': 'min-height:18px;'
+            }
+        }
+    }
 
 
 admin.register(Campaign, CampaignAdmin,
