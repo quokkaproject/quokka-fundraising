@@ -76,7 +76,7 @@ class DonationAdmin(ModelAdmin):
                 'labels': {
                     'confirmed': 'success',
                     'checked_out': 'warning',
-                    'cancelled': 'danger',
+                    'cancelled': 'important',
                     'completed': 'success'
                 },
                 'style': 'min-height:18px;'
