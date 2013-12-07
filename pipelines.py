@@ -37,7 +37,8 @@ class CompleteInformation(CartPipeline):
         user = get_current_user()
         confirm = request.form.get("fundraising_complete_information_confirm")
         if not confirm:
-            return self.render('fundraising/complete_information.html')
+            return self.render('fundraising/complete_information.html',
+                               name=user.name)
 
         display_name = request.form.get('display_name') or user.name
         published = request.form.get('published', True)
@@ -48,7 +49,7 @@ class CompleteInformation(CartPipeline):
         )
 
         for donation in donations:
-            donation.published = (published == u'on')
+            donation.published = self.cart.published = (published == u'on')
             donation.display_name = display_name
             donation.save()
 

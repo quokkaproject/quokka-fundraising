@@ -53,11 +53,11 @@ class Campaign(BaseProduct):
         self.save()
 
     def get_donor_list(self):
-        return [
-            donation.donor
+        return set([
+            donation.display_name or donation.donor
             for donation in
             self.donations.filter(show_donor=True, status="confirmed")
-        ]
+        ])
 
     def save(self, *args, **kwargs):
         if self.donations:
@@ -91,6 +91,10 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
     payment_method = db.StringField(max_length=255)
 
     search_helper = db.StringField()
+
+    meta = {
+        'ordering': ['-created_at']
+    }
 
     def __unicode__(self):
         return u"{s.donor} - {s.total}".format(s=self)
@@ -184,8 +188,8 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
             return ""
         user = self.donor
         return " ".join([
-            user.name,
-            user.email,
+            user.name or "",
+            user.email or "",
             self.display_name or ""
         ])
 
@@ -193,11 +197,6 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
 
         if self.cart and self.cart.processor:
             self.payment_method = self.cart.processor.identifier
-
-        if self.cart:
-            self.published = self.cart.published
-            self.total = self.cart.total
-            self.tax = self.cart.tax
 
         self.search_helper = self.get_search_helper()
         super(Donation, self).save(*args, **kwargs)
