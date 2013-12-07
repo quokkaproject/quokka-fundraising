@@ -67,7 +67,7 @@ class DonationAdmin(ModelAdmin):
     column_formatters_args = {
         'ul': {
             'values': {
-                'placeholder': "{item.campaign.title} - {item.value}",
+                'placeholder': u"{item.campaign.title} - {item.value}",
                 'style': "min-width:200px;max-width:300px;"
             }
         },
