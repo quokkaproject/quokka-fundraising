@@ -61,6 +61,25 @@ class TransactionListView(MethodView):
         for item in context['aggregate_by_channel']:
             item['channel'] = Channel.objects.get(id=item['_id'])
 
+        project_donation_slugs = current_app.config.get(
+            'FUNDRAISING_TRANSACTION_EXTRA', ['project-campaign']
+        )
+        if project_donation_slugs:
+            for project_donation_slug in project_donation_slugs:
+                try:
+                    project_donation = Campaign.objects.get(
+                        slug=project_donation_slug
+                    )
+                    context['aggregate_by_channel'].append(
+                        {
+                            "total": project_donation.balance,
+                            "count": len(project_donation.donations or []),
+                            "channel": project_donation.channel
+                        }
+                    )
+                except Campaign.DoesNotExist:
+                    pass
+
         return render_template('fundraising/transaction_list.html', **context)
 
 
