@@ -37,7 +37,8 @@ class TransactionListView(MethodView):
                     "taxes": {"$sum": "$tax"},
                     "count": {"$sum": 1}
                 }
-            }
+            },
+            {'$sort': {"_id": 1}}
         ])
 
         context['aggregated'] = aggregated.get('result')
