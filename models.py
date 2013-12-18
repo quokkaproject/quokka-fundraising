@@ -56,14 +56,16 @@ class Campaign(BaseProduct):
         return set([
             donation.display_name or donation.donor
             for donation in
-            self.donations.filter(show_donor=True, status="confirmed")
+            self.donations.filter(show_donor=True, status="confirmed") +
+            self.donations.filter(show_donor=True, status="completed")
         ])
 
     def save(self, *args, **kwargs):
         if self.donations:
             self.balance = sum(
                 [item.value
-                 for item in self.donations.filter(status="confirmed")]
+                 for item in self.donations.filter(status="confirmed") +
+                             self.donations.filter(status="completed")]
             )
         super(Campaign, self).save(*args, **kwargs)
 
