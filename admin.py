@@ -26,7 +26,7 @@ class CampaignAdmin(BaseContentAdmin):
                     'open_for_donations',
                     'add_image', 'contents',
                     'show_on_channel', 'available_at', 'available_until',
-                    'tags', 'values', 'template_type', 'donations']
+                    'tags', 'values', 'template_type']
 
     form_subdocuments = {
         'contents': {
@@ -53,7 +53,11 @@ class DonationAdmin(ModelAdmin):
     column_list = ['donor', 'created_at', 'values', 'total', 'tax',
                    'payment_method', 'status', 'confirmed_date', 'published']
     column_searchable_list = ['search_helper', 'payment_method']
-    form_columns = ['donor', 'created_at', 'values', 'total', 'tax',
+    column_filters = ('status', 'created_at', 'confirmed_date',
+                      'payment_method', 'display_name', 'total', 'tax')
+    form_columns = ['donor', 'created_at',
+                    'values',
+                    'total', 'tax',
                     'payment_method', 'status', 'published',
                     'confirmed_date', 'display_name']
 
