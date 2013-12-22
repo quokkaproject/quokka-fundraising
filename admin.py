@@ -9,7 +9,18 @@ from quokka.core.widgets import TextEditor, PrepopulatedText
 from .models import Campaign, Donation
 
 
+def difference(self, request, obj, fieldname, *args, **kwargs):
+    if not obj.goal:
+        return 0
+    return float(obj.balance or 0) - float(obj.goal or 0)
+
+
 class CampaignAdmin(BaseContentAdmin):
+
+    column_list = ('title', 'slug', 'channel',
+                   'balance', 'goal', 'difference',
+                   'published', 'created_at',
+                   'available_at', 'view_on_site')
 
     column_searchable_list = ('title', 'description', 'summary')
 
@@ -45,6 +56,13 @@ class CampaignAdmin(BaseContentAdmin):
                 }
             }
         },
+    }
+
+    column_formatters = {
+        'view_on_site': ModelAdmin.formatters.get('view_on_site'),
+        'created_at': ModelAdmin.formatters.get('datetime'),
+        'available_at': ModelAdmin.formatters.get('datetime'),
+        'difference': difference
     }
 
 

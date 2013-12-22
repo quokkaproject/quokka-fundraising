@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import datetime
-from flask import current_app
+from flask import current_app, url_for
 from quokka.core.db import db
 # from quokka.utils import get_current_user
 from quokka.core.models import Publishable, Channel
@@ -65,7 +65,7 @@ class Campaign(BaseProduct):
             self.balance = sum(
                 [item.value
                  for item in self.donations.filter(status="confirmed") +
-                             self.donations.filter(status="completed")]
+                 self.donations.filter(status="completed")]
             )
         super(Campaign, self).save(*args, **kwargs)
 
@@ -100,6 +100,9 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
 
     def __unicode__(self):
         return u"{s.donor} - {s.total}".format(s=self)
+
+    def get_admin_url(self):
+        return url_for('donationview.edit_view', id=self.id)
 
     def set_project_campaign(self, donation_to_project, cart=None):
         cart = cart or self.cart
