@@ -19,7 +19,7 @@ def get_random_campaign(items=3, current_id=None, **kwargs):
 def get_latest_donations(limit=None, order_by='-confirmed_date', **kwargs):
     donations = Donation.objects.filter(
         published=True,
-        status='confirmed',
+        status__in=['confirmed', 'completed'],
         **kwargs
     ).order_by(order_by)
 

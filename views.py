@@ -14,7 +14,7 @@ class TransactionListView(MethodView):
         context = {}
 
         donations = Donation.objects(
-            status='confirmed'
+            status__in=['confirmed', 'completed']
         ).order_by('confirmed_date')
 
         if not donations:
@@ -29,7 +29,7 @@ class TransactionListView(MethodView):
         collection = Donation._get_collection()
 
         aggregated = collection.aggregate([
-            {"$match": {"status": 'confirmed'}},
+            {"$match": {"status": {'$in': ['confirmed', 'completed']}}},
             {
                 "$group": {
                     "_id": "$payment_method",
