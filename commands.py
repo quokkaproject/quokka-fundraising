@@ -20,4 +20,4 @@ class ListCampaign(Command):
             campaigns = campaigns(title=title)
 
         for campaign in campaigns:
-            print(campaign)
+            print(campaign)  # noqa
