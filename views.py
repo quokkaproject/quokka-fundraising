@@ -4,7 +4,7 @@ from flask.views import MethodView
 from quokka.utils import get_current_user
 from quokka.modules.cart.models import Cart, Item
 from quokka.core.templates import render_template
-from quokka.core.models import Channel
+from quokka.core.models.channel import Channel
 
 from .models import Donation, Campaign, Values
 
@@ -89,7 +89,7 @@ class DonationView(MethodView):
         campaign_id = request.form.get('campaign_id')
         value = request.form.get('value')
         if not value:
-            return redirect(url_for('list'))
+            return redirect(url_for('quokka.core.list'))
         self.current_user = get_current_user()
         self.cart = Cart.get_cart()
 
@@ -163,4 +163,4 @@ class DonationView(MethodView):
         self.cart.fundraising_donation_id = donation.id
         self.cart.addlog(u"%s items added" % len(cart_items), save=True)
 
-        return redirect(url_for('cart.cart'))
+        return redirect(url_for('quokka.modules.cart.cart'))
