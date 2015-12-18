@@ -1,7 +1,7 @@
 # coding : utf -8
 
 from quokka import admin
-from quokka.core.admin import _, _l
+from quokka.utils.translation import _, _l
 from quokka.core.admin.models import ModelAdmin, BaseContentAdmin
 from quokka.core.admin.fields import ThumbField
 from quokka.core.widgets import TextEditor, PrepopulatedText

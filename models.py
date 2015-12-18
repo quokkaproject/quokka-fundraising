@@ -4,7 +4,8 @@ import datetime
 from flask import current_app, url_for
 from quokka.core.db import db
 # from quokka.utils import get_current_user
-from quokka.core.models import Publishable, Channel
+from quokka.core.models.signature import Publishable
+from quokka.core.models.channel import Channel
 from quokka.modules.cart.models import BaseProduct, BaseProductReference, Cart
 from quokka.modules.cart.models import Item
 
@@ -102,7 +103,7 @@ class Donation(BaseProductReference, Publishable, db.DynamicDocument):
         return u"{s.donor} - {s.total}".format(s=self)
 
     def get_admin_url(self):
-        return url_for('donationview.edit_view', id=self.id)
+        return url_for('donation.edit_view', id=self.id)
 
     def set_project_campaign(self, donation_to_project, cart=None):
         cart = cart or self.cart

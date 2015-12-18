@@ -3,7 +3,7 @@
 <div class="container">
 <h2> Confirme seus dados </h2>
 
-<form class="form-horizontal" role="form" action="{{url_for('cart.checkout')}}" method="POST">
+<form class="form-horizontal" role="form" action="{{url_for('quokka.modules.cart.checkout')}}" method="POST">
 
 <input type="hidden" name="fundraising_complete_information_confirm" value="true">
 
@@ -32,7 +32,8 @@
 
 </form>
 
-<a class="btn" href="{{url_for_security('logout', next=url_for('cart.cart'))}}">Sair e fazer login com outro usuário</a>
+<a class="btn" href="{{url_for_security('logout', next=url_for('quokka.modules
+.cart.cart'))}}">Sair e fazer login com outro usuário</a>
 </div>
 
 {% endblock %}
