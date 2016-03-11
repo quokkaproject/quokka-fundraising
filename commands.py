@@ -1,11 +1,15 @@
 # coding: utf-8
 
+import logging
+
 from flask.ext.script import Command, Option
 from .models import Campaign
 
+logger = logging.getLogger(__name__)
+
 
 class ListCampaign(Command):
-    "prints a list of campaigns"
+    '''prints a list of campaigns'''
 
     command_name = 'list_campaigns'
 
@@ -20,4 +24,4 @@ class ListCampaign(Command):
             campaigns = campaigns(title=title)
 
         for campaign in campaigns:
-            print(campaign)  # noqa
+            logger.info('Campaign: {}'.format(campaign))
